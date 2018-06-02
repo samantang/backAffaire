@@ -73,37 +73,8 @@ public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
 	 * @return
 	 */
 	List<Annonce> findByCategorie(String categorie);
-//	/**
-//	 * @param categorie
-//	 * @param natureAnnonce
-//	 * @param prixMin
-//	 * @param prixMax
-//	 * * @param surfaceMetreCarreMin
-//	 * @param surfaceMetreCarreMax
-//	 * @param nbPiecesMin
-//	 * @param nbPiecesMax
-//	 * @param anneeModeleMin
-//	 * @param anneeModeleMax
-//	 * @param carburant
-//	 * @param boiteDeVitesse
-//	 * @param marque
-//	 * @param cylindre
-//	 * @param longueurMin
-//	 * @param longueurMax
-//	 * @param largeurMin
-//	 * @param largeurMax
-//	 * @return
-//	 */
-//	@Query("select a from Annonce a where a.categorie = :categorie and a.natureAnnonce = :natureAnnonce and (:prixMin = 0 or a.prix >= :prixMin) and"
-//			+ "(:prixMax = 0 or a.prix <= :prixMax) and (:surfaceMetreCarreMin = 0 or a.surfaceMetreCarre >= :surfaceMetreCarreMin) and (:surfaceMetreCarreMax = 0 or a.surfaceMetreCarre <= :surfaceMetreCarreMax) and"
-//			+ "(:nbPiecesMin = 0 or a.nbPieces >= :nbPiecesMin) and (:nbPiecesMax = 0 or a.nbPieces <= :nbPiecesMax) and (:anneeModeleMin = 0 or a.anneeModele >= :anneeModeleMin) and (:anneeModeleMax = 0 or a.anneeModele <= :anneeModeleMax) and"
-//			+ "(:carburant = '' or a.carburant = :carburant) and (:boiteDeVitesse = '' or a.boiteDeVitesse = :boiteDeVitesse) and (:marque = '' or a.marque = :marque) and (:cylindre = 0 or a.cylindre = :cylindre) and"
-//			+ "(:longueurMin = 0 or a.longueur >= :longueurMin) and (:longueurMax = 0 or a.longueur <= :longueurMax) and (:largeurMin = 0 or a.largeur >= :largeurMin) and (:largeurMax = 0 or a.largeur <= :largeurMax)")
-//	
-//	List<Annonce> findByCategorie(@Param("categorie")String categorie, @Param("natureAnnonce")String natureAnnonce, @Param("prixMin")int prixMin, @Param("prixMax")int prixMax,
-//			@Param("surfaceMetreCarreMin")int surfaceMetreCarreMin, @Param("surfaceMetreCarreMax")int surfaceMetreCarreMax, @Param("nbPiecesMin")int nbPiecesMin, @Param("nbPiecesMax")int nbPiecesMax ,
-//			@Param("anneeModeleMin")int anneeModeleMin, @Param("anneeModeleMax")int anneeModeleMax, @Param("carburant")String carburant, @Param("boiteDeVitesse")String boiteDeVitesse, @Param("marque")String marque,
-//			@Param("cylindre")int cylindre, @Param("longueurMin")int longueurMin, @Param("longueurMax")int longueurMax, @Param("largeurMin")int largeurMin, @Param("largeurMax")int largeurMax);
+
+	
 	/**
 	 * @param categorie
 	 * @param natureAnnonce
@@ -119,45 +90,6 @@ public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
 	@Param("surfaceMetreCarreMin")int surfaceMetreCarreMin, @Param("surfaceMetreCarreMax")int surfaceMetreCarreMax, @Param("nbPiecesMin")int nbPiecesMin, @Param("nbPiecesMax")int nbPiecesMax,
 	@Param("anneeModeleMin")int anneeModeleMin, @Param("anneeModeleMax")int anneeModeleMax, @Param("cylindre")int cylindre, @Param("longueurMin")int longueurMin, @Param("longueurMax")int longueurMax, @Param("largeurMin")int largeurMin, @Param("largeurMax")int largeurMax);
 	
-	
-//	/**
-//	 * @param categorie
-//	 * @param natureAnnonce
-//	 * @param prixMin
-//	 * @param prixMax
-//	 * @param surfaceMetreCarreMin
-//	 * @param surfaceMetreCarreMax
-//	 * @param nbPiecesMin
-//	 * @param nbPiecesMax
-//	 * @param anneeModeleMin
-//	 * @param anneeModeleMax
-//	 * @param carburant
-//	 * @param boiteDeVitesse
-//	 * @param marque
-//	 * @param cylindre
-//	 * @param longueurMin
-//	 * @param longueurMax
-//	 * @param largeurMin
-//	 * @param largeurMax
-//	 * @param immobilierMaison
-//	 * @param immobilierParking
-//	 * @param immobilierTerrain
-//	 * @param immoblierAppartement
-//	 * @return
-//	 */
-//	@Query("select a from Annonce a where a.categorie = :categorie and a.natureAnnonce =:natureAnnonce and (:prixMin = 0 or a.prix >= :prixMin) and"
-//			+ "(:prixMax = 0 or a.prix <= :prixMax) and (:surfaceMetreCarreMin = 0 or a.surfaceMetreCarre >= :surfaceMetreCarreMin) and (:surfaceMetreCarreMax = 0 or a.surfaceMetreCarre <= :surfaceMetreCarreMax) and"
-//			+ "(:nbPiecesMin = 0 or a.nbPieces >= :nbPiecesMin) and (:nbPiecesMax = 0 or a.nbPieces <= :nbPiecesMax) and (:anneeModeleMin = 0 or a.anneeModele >= :anneeModeleMin) and (:anneeModeleMax = 0 or a.anneeModele <= :anneeModeleMax) and"
-//			+ "(:carburant = '' or a.carburant = :carburant) and (:boiteDeVitesse = '' or a.boiteDeVitesse = :boiteDeVitesse) and (:marque = '' or a.marque = :marque) and (:cylindre = 0 or a.cylindre = :cylindre) and"
-//			+ "(:longueurMin = 0 or a.longueur >= :longueurMin) and (:longueurMax = 0 or a.longueur <= :longueurMax) and (:largeurMin = 0 or a.largeur >= :largeurMin) and (:largeurMax = 0 or a.largeur <= :largeurMax) and"
-//			+ "(:immobilierMaison = false or a.immobilierMaison = :immobilierMaison) and (:immobilierParking = false or a.immobilierParking = :immobilierParking) and (:immobilierTerrain = false or a.immobilierTerrain = :immobilierTerrain) and "
-//			+ "(:immoblierAppartement = false or a.immoblierAppartement = :immoblierAppartement)")
-//	
-//	List<Annonce> findByCategorie(@Param("categorie")String categorie, @Param("natureAnnonce")String natureAnnonce, @Param("prixMin")int prixMin, @Param("prixMax")int prixMax,
-//			@Param("surfaceMetreCarreMin")int surfaceMetreCarreMin, @Param("surfaceMetreCarreMax")int surfaceMetreCarreMax, @Param("nbPiecesMin")int nbPiecesMin, @Param("nbPiecesMax")int nbPiecesMax,
-//			@Param("anneeModeleMin")int anneeModeleMin, @Param("anneeModeleMax")int anneeModeleMax, @Param("carburant")String carburant, @Param("boiteDeVitesse")String boiteDeVitesse, @Param("marque")String marque,
-//			@Param("cylindre")int cylindre, @Param("longueurMin")int longueurMin, @Param("longueurMax")int longueurMax, @Param("largeurMin")int largeurMin, @Param("largeurMax")int largeurMax, @Param("immobilierMaison")boolean immobilierMaison,
-//			@Param("immobilierParking")boolean immobilierParking, @Param("immobilierTerrain")boolean immobilierTerrain, @Param("immoblierAppartement")boolean immoblierAppartement);
 	
 	
 }

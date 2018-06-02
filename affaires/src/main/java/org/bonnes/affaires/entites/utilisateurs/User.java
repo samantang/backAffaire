@@ -34,6 +34,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author salioubah
@@ -42,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="type_user", discriminatorType=DiscriminatorType.STRING, length=20)
+@JsonIgnoreProperties
 public class User implements UserDetails
 {
 	
@@ -133,13 +135,13 @@ public class User implements UserDetails
     
     private String erreur;
     
-    @OneToMany(mappedBy="mes_conversations_vendeur")
-	@JsonIgnore
-    private Collection<Conversation> MesConversationsVendeur;
-    
-    @OneToMany(mappedBy="mes_conversations_acheteur")
-	@JsonIgnore
-    private Collection<Conversation> conversationsAcheteur;
+//    @OneToMany(mappedBy="mes_conversations_vendeur")
+//	@JsonIgnore
+//    private Collection<Conversation> MesConversationsVendeur;
+//    
+//    @OneToMany(mappedBy="mes_conversations_acheteur")
+//	@JsonIgnore
+//    private Collection<Conversation> conversationsAcheteur;
     
     @OneToMany(mappedBy="user_annoncesInvalidees")
     @JsonIgnore
@@ -149,11 +151,52 @@ public class User implements UserDetails
     @JsonIgnore
     private Collection<Annonce> annoncesDepubliees;
     
+	private String dateInscriptionString;
+	private String success;
+//	@OneToMany(mappedBy="user_mesAnnonceValideesAdmin")
+	@ElementCollection
+    @JsonIgnore
+	private Collection<Annonce> mesAnnonceValideesAdmin;
+	@ElementCollection
+    @JsonIgnore
+	private Collection<Annonce> mesAnnonceInValideesAdmin;
+		
+    
+    
 	
-    
-    
-    
-    public Collection<Annonce> getAnnoncesDepubliees() {
+    public Collection<Annonce> getMesAnnonceInValideesAdmin() {
+		return mesAnnonceInValideesAdmin;
+	}
+
+	public void setMesAnnonceInValideesAdmin(Collection<Annonce> mesAnnonceInValideesAdmin) {
+		this.mesAnnonceInValideesAdmin = mesAnnonceInValideesAdmin;
+	}
+
+	public Collection<Annonce> getMesAnnonceValideesAdmin() {
+		return mesAnnonceValideesAdmin;
+	}
+
+	public void setMesAnnonceValideesAdmin(Collection<Annonce> mesAnnonceValideesAdmin) {
+		this.mesAnnonceValideesAdmin = mesAnnonceValideesAdmin;
+	}
+
+	public String getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(String success) {
+		this.success = success;
+	}
+
+	public String getDateInscriptionString() {
+		return dateInscriptionString;
+	}
+
+	public void setDateInscriptionString(String dateInscriptionString) {
+		this.dateInscriptionString = dateInscriptionString;
+	}
+
+	public Collection<Annonce> getAnnoncesDepubliees() {
 		return annoncesDepubliees;
 	}
 
@@ -161,21 +204,21 @@ public class User implements UserDetails
 		this.annoncesDepubliees = annoncesDepubliees;
 	}
 
-	public Collection<Conversation> getMesConversationsVendeur() {
-		return MesConversationsVendeur;
-	}
-
-	public void setMesConversationsVendeur(Collection<Conversation> mesConversationsVendeur) {
-		MesConversationsVendeur = mesConversationsVendeur;
-	}
-
-	public Collection<Conversation> getConversationsAcheteur() {
-		return conversationsAcheteur;
-	}
-
-	public void setConversationsAcheteur(Collection<Conversation> conversationsAcheteur) {
-		this.conversationsAcheteur = conversationsAcheteur;
-	}
+//	public Collection<Conversation> getMesConversationsVendeur() {
+//		return MesConversationsVendeur;
+//	}
+//
+//	public void setMesConversationsVendeur(Collection<Conversation> mesConversationsVendeur) {
+//		MesConversationsVendeur = mesConversationsVendeur;
+//	}
+//
+//	public Collection<Conversation> getConversationsAcheteur() {
+//		return conversationsAcheteur;
+//	}
+//
+//	public void setConversationsAcheteur(Collection<Conversation> conversationsAcheteur) {
+//		this.conversationsAcheteur = conversationsAcheteur;
+//	}
 
 	public Collection<Annonce> getAnnoncesInvalidees() {
 		return annoncesInvalidees;

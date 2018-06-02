@@ -10,6 +10,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.bonnes.affaires.dao.AnnonceRepository;
 import org.bonnes.affaires.dao.ConversationRepository;
 import org.bonnes.affaires.dao.MessageRepository;
@@ -22,6 +25,7 @@ import org.bonnes.affaires.entites.Message;
 import org.bonnes.affaires.entites.RechercheModele;
 import org.bonnes.affaires.entites.utilisateurs.User;
 import org.bonnes.affaires.services.AnnonceService;
+import org.bonnes.affaires.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -47,6 +51,27 @@ public class AnnonceServiceImpl implements AnnonceService{
 	@Autowired
 	private ConversationRepository conversationRepository;
 	
+	@Autowired
+	private UserService userService;
+	
+	@PersistenceContext
+	private EntityManager em;
+	
+	
+	
+	public AnnonceServiceImpl() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public EntityManager getEm() {
+		return em;
+	}
+
+	public void setEm(EntityManager em) {
+		this.em = em;
+	}
+
 	@Override
 	public boolean checkAnnonceValide(Annonce annonce) {
 		
@@ -109,7 +134,7 @@ public class AnnonceServiceImpl implements AnnonceService{
 		 
 		User user = userDao.findOne(userId);
 		
-		DateFormat df = new SimpleDateFormat("yyy/MM/dd hh:mm", Locale.FRANCE);
+		DateFormat df = new SimpleDateFormat("dd/MM/YYYY hh:mm", Locale.FRANCE);
 		Date now = new Date();
 		String dateString = df.format(now);
 		
@@ -120,10 +145,8 @@ public class AnnonceServiceImpl implements AnnonceService{
 		Annonce annonceSaved = annonceRepository.saveAndFlush(annonce);
 		user.getAnnoncesPostees().add(annonceSaved);
 		userDao.save(user);
+		System.out.println("user qui a posté l'annonce: "+ annonceSaved.getUser_annoncesPostees().getEmail());
 		
-//		for (Annonce anno : user.getAnnoncesAvalider()) {
-//			System.out.println("nom de l'annonce: "+anno.getNom());
-//		}
 		return annonceSaved;
 	}
 
@@ -148,21 +171,20 @@ public class AnnonceServiceImpl implements AnnonceService{
 		annonce.setPublie(false);
 		annonce.setEtatPublication("false");
 		Annonce annonceSaved = annonceRepository.saveAndFlush(annonce);
-		user.getAnnoncesInvalidees().add(annonceSaved);
+		user.getMesAnnonceInValideesAdmin().add(annonceSaved);
 		userDao.save(user);
 		
 		
 	}
 
 	/* (non-Javadoc)
-	 * @see org.bonnes.affaires.services.AnnonceService#valideAnnoce(java.lang.Long, org.bonnes.affaires.entites.utilisateurs.User)
+	 * @see org.bonnes.affaires.services.AnnonceService#valideAnnoce(java.lang.Long, java.lang.String)
 	 */
 	@Override
-	public Annonce valideAnnoce(Long id, User user) {
-		System.out.println("l'ID transmit est : "+id);
+	public Annonce valideAnnoce(Long id, String username) {
 		Annonce annonce = annonceRepository.findOne(id);
 		User userAnnonce = annonce.getUser_annoncesPostees();
-		System.out.println("l'email de userAnnonce: + "+userAnnonce.getEmail());
+		User user = userDao.findByUsername(username);
 //		si l'annonce est nulle, c'est que l'id fournit n'existe pas
 		if(annonce.equals(null)){
 			annonce = new Annonce();
@@ -172,27 +194,49 @@ public class AnnonceServiceImpl implements AnnonceService{
 		annonce.setPublie(true);
 		annonce.setEtatPublication("publie");
 		annonce.setUser_annoncesPosteesEtValidees(user);
+		Annonce annonceSaved = annonceRepository.saveAndFlush(annonce);
 				
 //		ajout de l'annonce dans la liste des annonces active de son propietaire, et suppression dans sa liste des annonces a valider
+		userAnnonce.getAnnoncesPosteesEtValidees().add(annonceSaved);
+		userAnnonce.getAnnoncesPostees().remove(annonceSaved);
+		userDao.save(userAnnonce);
+	
+		
+//		user.getAnnoncesValidees().add(annonceSaved);
+//		userDao.save(user);
+//		em.merge(user);
+
+		return annonce;
+	}
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.AnnonceService#addAnnonceDansListAnnoncesActivesUser(java.lang.Long)
+	 */
+	@Override
+	public void addAnnonceDansListAnnoncesActivesUser(Long id) {
+		Annonce annonce = annonceRepository.findOne(id);
+		User userAnnonce = annonce.getUser_annoncesPostees();
 		userAnnonce.getAnnoncesPosteesEtValidees().add(annonce);
 		userAnnonce.getAnnoncesPostees().remove(annonce);
 		userDao.saveAndFlush(userAnnonce);
-	
+		System.out.println("email du userAnnonce: "+userAnnonce.getEmail());
 		
-		Annonce annonceSaved = annonceRepository.saveAndFlush(annonce);
-		Long idASaved = annonceSaved.getId();
-		Annonce annonceToSave = annonceRepository.findOne(idASaved);
-//		annonceRepository.save(annonce);
-		user.getAnnoncesValidees().add(annonceToSave);
-				
-		
-//		for (Annonce a : user.getAnnoncesValidees()) {
-//			System.out.println("mes annonces Validees:"+ a.getTitre() );
-//		}
-		
-		userDao.saveAndFlush(user);
+	}
 
-		return annonce;
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.AnnonceService#addAnnonceDansListAnnoncesValideesUser(java.lang.Long, java.lang.String)
+	 */
+	@Override
+	public void addAnnonceDansListAnnoncesValideesUser(Long id, String username) {
+		Annonce annonce = annonceRepository.findOne(id);
+		User u = userDao.findByUsername(username);
+		User user = userDao.findOne(u.getUserId());
+		user.getMesAnnonceValideesAdmin().add(annonce);
+//		annonceRepository.saveAndFlush(annonce);
+		userDao.save(user);
+		System.out.println("l'annonce est: " + annonce.getTitre() + "et le user est " + user.getUsername());
+		for (Annonce an : user.getMesAnnonceValideesAdmin()) {
+			System.out.println("titre de l'annonce validee:" + an.getTitre());
+		}
 	}
 
 	/* (non-Javadoc)
@@ -289,14 +333,16 @@ public class AnnonceServiceImpl implements AnnonceService{
 	}
 
 	/* (non-Javadoc)
-	 * @see org.bonnes.affaires.services.AnnonceService#deleteAnnonce(java.lang.Long, org.bonnes.affaires.entites.utilisateurs.User)
+	 * @see org.bonnes.affaires.services.AnnonceService#deleteAnnonce(java.lang.Long, java.lang.String)
 	 */
 	@Override
-	public Annonce deleteAnnonce(Long idAnnonce, User user) {
+	public Annonce deleteAnnonce(Long idAnnonce, String username) {
 		Annonce annonce = new Annonce();
+		User user = userDao.findByUsername(username);
 		if(annonceExiste(idAnnonce) && AnnonceAppartientAuser(idAnnonce, user)){
-			System.out.println("l'id de l'annonce est "+idAnnonce);
 			annonce =  annonceRepository.findOne(idAnnonce);
+//			user.getanno
+//			System.out.println(annonce.getTitre());
 			annonceRepository.delete(annonce);
 		}
 		return annonce;
@@ -508,6 +554,15 @@ public class AnnonceServiceImpl implements AnnonceService{
 		return annonces;
 	}
 
-	
-
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.AnnonceService#addNbVuesAnnonce(java.lang.Long)
+	 */
+	@Override
+	public Annonce addNbVuesAnnonce(Long id) {
+		// TODO Auto-generated method stub
+		Annonce annonce = annonceRepository.findOne(id);
+		annonce.setNombreDeVues(annonce.getNombreDeVues() + 1);
+		annonceRepository.save(annonce);
+		return annonce;
+	}
 }

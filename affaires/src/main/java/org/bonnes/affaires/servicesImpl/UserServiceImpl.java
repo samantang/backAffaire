@@ -3,12 +3,17 @@
  */
 package org.bonnes.affaires.servicesImpl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.bonnes.affaires.dao.RoleDao;
 import org.bonnes.affaires.dao.UserDao;
 import org.bonnes.affaires.entites.Annonce;
+import org.bonnes.affaires.entites.utilisateurs.Role;
 import org.bonnes.affaires.entites.utilisateurs.User;
 import org.bonnes.affaires.entites.utilisateurs.UserRole;
 import org.bonnes.affaires.services.UserService;
@@ -25,9 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class UserServiceImpl 
-implements UserService 
-{
+public class UserServiceImpl implements UserService {
 private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 	
 	@Autowired
@@ -77,6 +80,19 @@ private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
         return localUser;
     }
+    /* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#updatePassword(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void updatePassword(String password, String username) {
+		// TODO Auto-generated method stub
+		User user = userDao.findByUsername(username);
+		String encryptedPassword = passwordEncoder.encode(password);
+		System.out.println("le password  " + user.getPassword());
+		System.out.println("le passwordentype: " + encryptedPassword);
+//		user.setPassword(encryptedPassword);
+//		userDao.save(user);
+	}
     
     public boolean checkUserExists(String username, String email){
         if (checkUsernameExists(username) || checkEmailExists(username)) {
@@ -141,6 +157,196 @@ private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
+
+	public UserDao getUserDao() {
+		return userDao;
+	}
+
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
+
+	public RoleDao getRoleDao() {
+		return roleDao;
+	}
+
+	public void setRoleDao(RoleDao roleDao) {
+		this.roleDao = roleDao;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#checkUserModerateurRole(java.lang.String)
+	 */
+	@Override
+	public boolean checkUserModerateurRole(String usernameToSetModerateur) {
+		boolean b = true;
+		Set<UserRole> userRoles = new HashSet<>();
+		User userToChange = userDao.findByUsername(usernameToSetModerateur);
+//		recuperation des roles du user
+		List<UserRole> listUserRole= new ArrayList<>();
+		List<Role> listRoles= new ArrayList<>();
+       userRoles = userToChange.getUserRoles();
+       Iterator it = userRoles.iterator();
+	     while(it.hasNext()){
+	    	 listUserRole.add((UserRole) it.next());
+	     }
+       for(UserRole u: listUserRole){
+    	   listRoles.add(u.getRole());
+       }
+       for(Role r: listRoles){
+    	   System.out.println("un role: "+r.getName());
+    	   if(r.getName().equals("ROLE_MODERATEUR")){
+    		   b = false;
+    		   break;
+    	   }
+       }
+		return b;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#checkUserAdminrRole(java.lang.String)
+	 */
+	@Override
+	public boolean checkUserAdminrRole(String usernameToSetModerateur) {
+		boolean b = true;
+		Set<UserRole> userRoles = new HashSet<>();
+		User userToChange = userDao.findByUsername(usernameToSetModerateur);
+//		recuperation des roles du user
+		List<UserRole> listUserRole= new ArrayList<>();
+		List<Role> listRoles= new ArrayList<>();
+       userRoles = userToChange.getUserRoles();
+       Iterator it = userRoles.iterator();
+	     while(it.hasNext()){
+	    	 listUserRole.add((UserRole) it.next());
+	     }
+       for(UserRole u: listUserRole){
+    	   listRoles.add(u.getRole());
+       }
+       for(Role r: listRoles){
+    	   System.out.println("un role: "+r.getName());
+    	   if(r.getName().equals("ROLE_ADMIN")){
+    		   b = false;
+    		   break;
+    	   }
+       }
+		return b;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#checkUserSuperAdminrRole(java.lang.String)
+	 */
+	@Override
+	public boolean checkUserSuperAdminrRole(String usernameToSetModerateur) {
+		boolean b = true;
+		Set<UserRole> userRoles = new HashSet<>();
+		User userToChange = userDao.findByUsername(usernameToSetModerateur);
+//		recuperation des roles du user
+		List<UserRole> listUserRole= new ArrayList<>();
+		List<Role> listRoles= new ArrayList<>();
+       userRoles = userToChange.getUserRoles();
+       Iterator it = userRoles.iterator();
+	     while(it.hasNext()){
+	    	 listUserRole.add((UserRole) it.next());
+	     }
+       for(UserRole u: listUserRole){
+    	   listRoles.add(u.getRole());
+       }
+       for(Role r: listRoles){
+    	   System.out.println("un role: "+r.getName());
+    	   if(r.getName().equals("ROLE_SUPER_ADMIN")){
+    		   b = false;
+    		   break;
+    	   }
+       }
+		return b;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#compteActif(java.lang.Long)
+	 */
+	@Override
+	public boolean compteActif(Long id) {
+		boolean b = false;
+		User user = userDao.findOne(id);
+		if(user.isEnabled()){
+			b = true;
+		}
+		return b;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#suspendreCompte(java.lang.Long, java.lang.String)
+	 */
+	@Override
+	public void suspendreCompte(Long id, String username) {
+		User user = userDao.findOne(id);
+		user.setEnabled(false);
+		userDao.save(user);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#compteInActif(java.lang.Long)
+	 */
+	@Override
+	public boolean compteInActif(Long id) {
+		boolean b = false;
+		User user = userDao.findOne(id);
+		if(!user.isEnabled()){
+			b = true;
+		}
+		return b;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#activerCompte(java.lang.Long, java.lang.String)
+	 */
+	@Override
+	public void activerCompte(Long id, String username) {
+		User user = userDao.findOne(id);
+		user.setEnabled(true);
+		userDao.save(user);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#retireRole(org.bonnes.affaires.entites.utilisateurs.User, java.util.Set)
+	 */
+	@Override
+	public void retireRole(User userToChange, Set<UserRole> userRoles) {
+		userToChange.getUserRoles().remove(userRoles);
+		userDao.save(userToChange);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#retireRoleModerateur(org.bonnes.affaires.entites.utilisateurs.User, java.util.Set)
+	 */
+	@Override
+	public void retireRoleModerateur(User userToChange, Set<UserRole> userRoles) {
+		userToChange.getUserRoles().remove(userRoles);
+		userDao.save(userToChange);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#retireRoleAdmin(org.bonnes.affaires.entites.utilisateurs.User, java.util.Set)
+	 */
+	@Override
+	public void retireRoleAdmin(User userToChange, Set<UserRole> userRoles) {
+		userToChange.getUserRoles().remove(userRoles);
+		userDao.save(userToChange);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bonnes.affaires.services.UserService#retireRoleSuperAdmin(org.bonnes.affaires.entites.utilisateurs.User, java.util.Set)
+	 */
+	@Override
+	public void retireRoleSuperAdmin(User userToChange, Set<UserRole> userRoles) {
+		userToChange.getUserRoles().remove(userRoles);
+		userDao.save(userToChange);
+		
+	}	
 }
 

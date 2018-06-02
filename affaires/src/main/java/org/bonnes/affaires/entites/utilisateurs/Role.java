@@ -12,11 +12,14 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author salioubah
  *
  */
 @Entity
+//@JsonIgnoreProperties
 public class Role {
 
 	@Id

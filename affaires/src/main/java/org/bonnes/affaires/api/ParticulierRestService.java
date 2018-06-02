@@ -7,10 +7,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,68 +115,67 @@ public class ParticulierRestService {
 	
 	@RequestMapping(value = "/inscription", method = RequestMethod.POST)
     public User signupPost(@RequestBody User user,  Model model) {
-		System.out.println("le email est "+ user.getEmail());
-		System.out.println("le type  est "+ user.getType());
-//		String json =null;
-
 				
 //		si le nom d'utilisateur ou le mot de passe existe deja
         if(userService.checkUserExists(user.getUsername(), user.getEmail()))  {
         	
             if (userService.checkEmailExists(user.getEmail())) {
             	user.setErreur("Email existe en base de donnees");
-            	System.out.println(" le email  existe");
             }
 
             if (userService.checkUsernameExists(user.getUsername())) {
             	user.setErreur("Nom Utilisateur existe en base de donnees");
-            	System.out.println(" le nom   du user existe");
-//            	obj.put("erreur", "le nom du user existe");            	
             }
             user.setErreur("Email ou nom utilisateur existe deja");
         }
             else {
 ////        	sinon, alors inscription de l'utilisateur en fonction de son profil ...
-//        	
-////        	si c'est un particuler
+            	
+////        	si c'est un particuler            	
 	        	if(user.getType().equals("particulier")){
+	        		
+	        		DateFormat df = new SimpleDateFormat("dd/MM/YYYY hh:mm", Locale.FRANCE);
+	        		Date now = new Date();
+	        		String dateString = df.format(now);
+	        		
 	        		User userParticulier = new Particulier();
 	        		userParticulier.setPassword(user.getPassword());
 	        		userParticulier.setUsername(user.getUsername());
 	        		userParticulier.setEmail(user.getEmail());
+	        		userParticulier.setDateInscriptionString(dateString);
 	        		
 	        		Set<UserRole> userRoles = new HashSet<>();
 	                userRoles.add(new UserRole(userParticulier, roleDao.findByName("ROLE_PARTICULIER")));
 	
 	               userService.createUser(userParticulier, userRoles);
 	               System.out.println("insertion du particuler en base de donnee");
-	//               return json;
 	        	}
 	////        	si c'est pour la creation d'un professionnel
 	        	if(user.getType().equals("professionnel")){
+	        		
+	        		DateFormat df = new SimpleDateFormat("dd/MM/YYYY hh:mm", Locale.FRANCE);
+	        		Date now = new Date();
+	        		String dateString = df.format(now);
+	        		
 	        		User userProfessionnel = new Professionnel();
 	        		userProfessionnel.setPassword(user.getPassword());
 	        		userProfessionnel.setUsername(user.getUsername());
 	        		userProfessionnel.setEmail(user.getEmail());
+	        		userProfessionnel.setDateInscriptionString(dateString);
 	        		
 	        		Set<UserRole> userRoles = new HashSet<>();
 	                userRoles.add(new UserRole(userProfessionnel, roleDao.findByName("ROLE_PROFESSIONNEL")));
 	
 	               userService.createUser(userProfessionnel, userRoles);
 	               System.out.println("insertion du Professionnel en base de donnee");
-	//               return json;
 	        	}
 
         }
         return user;
-    }
+    }	
 	
-	
-//	les methodes de consultation ==================================================================================================================
 	@RequestMapping(value="/get-principal", method= RequestMethod.GET)
 	public String getPrincipal(Principal principal){
-//		User user = userService.findByUsername(principal.getName());
-//		System.out.println("le USERNAME du principale:  "+user.getUsername());
 		
 		return Jwts.builder().setSubject(userService.getUserName()).claim("roles", "user").setIssuedAt(new Date())
 				.signWith(SignatureAlgorithm.HS256, "secretkey").compact();

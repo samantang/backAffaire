@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.bonnes.affaires.dao.AlerteRepository;
 import org.bonnes.affaires.dao.AnnonceRepository;
 import org.bonnes.affaires.dao.RoleDao;
 import org.bonnes.affaires.dao.UserDao;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -65,6 +67,9 @@ public class UserController {
 	
 	@Autowired
 	private AlerteService alerteService;
+	
+	@Autowired
+	private AlerteRepository alerteRepository;
 	
 	@Autowired
     private RoleDao roleDao;
@@ -117,47 +122,161 @@ public class UserController {
 		System.out.println("dans get-user/users");
 		return null;
 	}
+    @RequestMapping(value ="/update-password/{password}", method = RequestMethod.POST)
+    public User updatePassword(@PathVariable("password")String password, @RequestBody String username){
+		userService.updatePassword(password, username);
+		return userDao.findByUsername(username);
+		
+	}
 	
 	
-	@RequestMapping(value ="/set-moderateur/{id}", method = RequestMethod.GET)
-	public String setModerateur (@PathVariable("id") Long id){
+	@RequestMapping(value ="/set-moderateur/{username}", method = RequestMethod.POST)
+	public User setModerateur (@PathVariable("username") String usernameToSetModerateur, @RequestBody String username){
+		Set<UserRole> userRoles = new HashSet<>();
+		User userToChange = userDao.findByUsername(usernameToSetModerateur);
+        userRoles.add(new UserRole(userToChange, roleDao.findByName("ROLE_MODERATEUR")));
+//        si l'utilisateur n'as pas déjà ce role
+        if(userService.checkUserModerateurRole(usernameToSetModerateur)){
+    		userService.setNouveauRole(userToChange, userRoles);
+        	userToChange.setSuccess("Ajout du role MODERATEUR pour cet Utilisateur");
+        }else{
+        	userToChange.setErreur("Cet utilisateur est dejà MODERATEUR");
+        }
+		return userToChange;
+	}
+	
+	@RequestMapping(value ="/set-admin/{username}", method = RequestMethod.POST)
+	public User setAdmin (@PathVariable("username") String usernameToSetModerateur, @RequestBody String username){
+		
+		Set<UserRole> userRoles = new HashSet<>();
+		User userToChange = userDao.findByUsername(username);
+        userRoles.add(new UserRole(userToChange, roleDao.findByName("ROLE_ADMIN")));
+//      si l'utilisateur n'as pas déjà ce role
+	      if(userService.checkUserAdminrRole(usernameToSetModerateur)){
+	  		userService.setNouveauRole(userToChange, userRoles);
+	      	userToChange.setSuccess("Ajout du role ADMIN pour cet Utilisateur");
+	      }else{
+	      	userToChange.setErreur("Cet utilisateur est dejà ADMIN");
+	      }
+		return userToChange;
+	}
+	
+	@RequestMapping(value ="/set-super-admin/{username}", method = RequestMethod.POST)
+	public User setSuperAdmin (@PathVariable("username") String usernameToSetModerateur, @RequestBody String username){
+		
+		Set<UserRole> userRoles = new HashSet<>();
+		User userToChange = userDao.findByUsername(username);
+        userRoles.add(new UserRole(userToChange, roleDao.findByName("ROLE_SUPER_ADMIN")));
+//      si l'utilisateur n'as pas déjà ce role
+	      if(userService.checkUserSuperAdminrRole(usernameToSetModerateur)){
+	  		userService.setNouveauRole(userToChange, userRoles);
+	      	userToChange.setSuccess("Ajout du role SUPER_ADMIN pour cet Utilisateur");
+	      }else{
+	      	userToChange.setErreur("Cet utilisateur est dejà SUPER_ADMIN");
+	      }
+		return userToChange;
+	}
+	@RequestMapping(value ="/retirer-role-particulier/{id}", method = RequestMethod.GET)
+	public User retirerRoleParticulier (@PathVariable("id") Long id){
+		
+		Set<UserRole> userRoles = new HashSet<>();
+		User userToChange = userDao.findOne(id);
+        userRoles.add(new UserRole(userToChange, roleDao.findByName("ROLE_PARTICULIER")));
+//      si l'utilisateur n'as pas déjà ce role
+//	      if(userService.checkUserSuperAdminrRole(usernameToSetModerateur)){
+	  		userService.retireRole(userToChange, userRoles);
+//	      	userToChange.setSuccess("Ajout du role SUPER_ADMIN pour cet Utilisateur");
+//	      }else{
+//	      	userToChange.setErreur("Cet utilisateur est dejà SUPER_ADMIN");
+//	      }
+		return userToChange;
+	}
+	@RequestMapping(value ="/retirer-role-moderateur/{id}", method = RequestMethod.GET)
+	public User retirerRoleModerateur (@PathVariable("id") Long id){
 		
 		Set<UserRole> userRoles = new HashSet<>();
 		User userToChange = userDao.findOne(id);
         userRoles.add(new UserRole(userToChange, roleDao.findByName("ROLE_MODERATEUR")));
-		userService.setNouveauRole(userToChange, userRoles);
-        System.out.println("mise a jour du role de l'utilisateur "+userToChange.getUsername()+" ");
-		return "mise a jour du role de l'utilisateur: MODERATEUR";
+//      si l'utilisateur n'as pas déjà ce role
+//	      if(userService.checkUserSuperAdminrRole(usernameToSetModerateur)){
+	  		userService.retireRoleModerateur(userToChange, userRoles);
+//	      	userToChange.setSuccess("Ajout du role SUPER_ADMIN pour cet Utilisateur");
+//	      }else{
+//	      	userToChange.setErreur("Cet utilisateur est dejà SUPER_ADMIN");
+//	      }
+		return userToChange;
 	}
-	
-	@RequestMapping(value ="/set-admin/{id}", method = RequestMethod.GET)
-	public String setAdmin (@PathVariable("id") Long id){
+	@RequestMapping(value ="/retirer-role-admin/{id}", method = RequestMethod.GET)
+	public User retirerRoleAdmin (@PathVariable("id") Long id){
 		
 		Set<UserRole> userRoles = new HashSet<>();
 		User userToChange = userDao.findOne(id);
         userRoles.add(new UserRole(userToChange, roleDao.findByName("ROLE_ADMIN")));
-		userService.setNouveauRole(userToChange, userRoles);
-        System.out.println("mise a jour du role de l'utilisateur "+userToChange.getUsername()+" ");
-		return "mise a jour du role de l'utilisateur: ADMIN";
+//      si l'utilisateur n'as pas déjà ce role
+//	      if(userService.checkUserSuperAdminrRole(usernameToSetModerateur)){
+	  		userService.retireRoleAdmin(userToChange, userRoles);
+//	      	userToChange.setSuccess("Ajout du role SUPER_ADMIN pour cet Utilisateur");
+//	      }else{
+//	      	userToChange.setErreur("Cet utilisateur est dejà SUPER_ADMIN");
+//	      }
+		return userToChange;
 	}
-	
-	@RequestMapping(value ="/set-super-admin/{id}", method = RequestMethod.GET)
-	public String setSuperAdmin (@PathVariable("id") Long id){
+	@RequestMapping(value ="/retirer-role-super-admin/{id}", method = RequestMethod.GET)
+	public User retirerRoleSuperAdmin (@PathVariable("id") Long id){
 		
 		Set<UserRole> userRoles = new HashSet<>();
 		User userToChange = userDao.findOne(id);
         userRoles.add(new UserRole(userToChange, roleDao.findByName("ROLE_SUPER_ADMIN")));
-		userService.setNouveauRole(userToChange, userRoles);
-        System.out.println("mise a jour du role de l'utilisateur "+userToChange.getUsername()+" ");
-		return "mise a jour du role de l'utilisateur: SUPER_ADMIN";
+//      si l'utilisateur n'as pas déjà ce role
+//	      if(userService.checkUserSuperAdminrRole(usernameToSetModerateur)){
+	  		userService.retireRoleSuperAdmin(userToChange, userRoles);
+//	      	userToChange.setSuccess("Ajout du role SUPER_ADMIN pour cet Utilisateur");
+//	      }else{
+//	      	userToChange.setErreur("Cet utilisateur est dejà SUPER_ADMIN");
+//	      }
+		return userToChange;
 	}
 		
+	@RequestMapping(value="/suspendre-compte/{id}", method = RequestMethod.POST)
+	public User suspendreCompte(@PathVariable ("id") Long id, @RequestBody String username){
+		User user = userDao.findOne(id); 
+		if(userService.compteActif(id)){
+			userService.suspendreCompte(id, username);
+			user.setSuccess("Le compte de ce utilisateur a bien été suspendu");
+		}else {
+			user.setErreur("Le compte de ce utilisateur est déjà suspendu");
+		}
+		return user;
+	}
 	
-	@RequestMapping(value="/add-alerte", method = RequestMethod.POST)
-	public Alerte addAlerte(@RequestBody Alerte alerte){
-		User user =userDao.findOne(ID); // qui sera recuperer par la suite par Principal de spring security
-		System.out.println(alerte.getCategorie());
+	@RequestMapping(value="/activer-compte/{id}", method = RequestMethod.POST)
+	public User activerCompte(@PathVariable ("id") Long id, @RequestBody String username){
+		User user = userDao.findOne(id); 
+		if(userService.compteInActif(id)){
+			userService.activerCompte(id, username);
+			user.setSuccess("Le compte de ce utilisateur a bien été activé");
+		}else {
+			user.setErreur("Le compte de ce utilisateur est déjà activé");
+		}
+		return user;
+	}
+	
+	@RequestMapping(value="/add-alerte/{username}", method = RequestMethod.POST)
+	public Alerte addAlerte(@PathVariable ("username") String username, @RequestBody Alerte alerte){
+		User user =userDao.findByUsername(username); 
 		return alerteService.addAlerte(alerte, user);
+	}
+	@RequestMapping(value="/get-alerte/{id}", method = RequestMethod.GET)
+	public Alerte getAlerte(@PathVariable ("id") Long id){
+		return alerteRepository.findOne(id);
+	}
+	@RequestMapping(value="/delete-alerte/{id}", method = RequestMethod.GET)
+	public Alerte deleteAlerte(@PathVariable ("id") Long id){
+		System.out.println("l'id de l'alerte à supprimer: "+id);
+		Alerte alerte = alerteRepository.findOne(id);
+		System.out.println(alerte.getTitre());
+		alerteRepository.delete(alerte);
+		return alerte;
 	}
 	@RequestMapping(value="/add-favori/{id}", method = RequestMethod.POST)
 	public Favori addFavori(@PathVariable("id") Long idAnnonce , @RequestBody String username){
@@ -167,20 +286,30 @@ public class UserController {
 	}
 	@RequestMapping(value="/valider-annonce/{id}", method= RequestMethod.POST)
 	public Annonce validerAnnonce(@PathVariable("id") Long id, @RequestBody String username){
-		System.out.println("valider annonce --- ");
-		User user = userService.findByUsername(username);
-		System.out.println(" l'email du user --- "+user.getEmail());
-//		System.out.println("le USERNAME du principale dans valider annonce:  "+user.getUsername());
-//		annonceService.valideAnnoce(id, user);
-		return annonceService.valideAnnoce(id, user);
+		Annonce annonceSaved = annonceService.valideAnnoce(id, username);
+		annonceService.addAnnonceDansListAnnoncesValideesUser(id, username);
+
+		return annonceDao.findOne(id);
 		
 	}
-	
-	
-	
+	@RequestMapping(value="/add-nb-vues-annonce/{id}", method= RequestMethod.GET)
+	public Annonce addNbVuesAnnonce(@PathVariable("id") Long id){
+		Annonce annonce = annonceService.addNbVuesAnnonce(id);
+		
+		return annonce;
+		
+	}
+		
 	@RequestMapping(value="/mes-annonces", method= RequestMethod.POST)
 	public List<Annonce> getMesAnnonces(@RequestBody String username){
 		User user =userDao.findByUsername(username);
+		return annonceService.getMesAnnonces(user);
+		
+	}
+	
+	@RequestMapping(value="/mes-annonces-id/{id}", method= RequestMethod.POST)
+	public List<Annonce> getMesAnnoncesId(@PathVariable ("id") Long id){
+		User user =userDao.findOne(id);
 		return annonceService.getMesAnnonces(user);
 		
 	}
@@ -206,11 +335,16 @@ public class UserController {
 	@RequestMapping(value="/mes-annonces-validees", method= RequestMethod.POST)
 	public List<Annonce> getMesAnnoncesValidees(@RequestBody String username){
 		User user =userDao.findByUsername(username);
-		System.out.println("mes annonces validee ........................."+user.getUsername());
-		List<Annonce> mesAValidees = (List<Annonce>) user.getAnnoncesValidees();
-		for (Annonce annonce : mesAValidees) {
-			System.out.println("validee "+annonce.getTitre());
-		}
+		List<Annonce> mesAValidees = (List<Annonce>) user.getMesAnnonceValideesAdmin();
+		
+		return mesAValidees;
+		
+	}
+	@RequestMapping(value="/ses-annonces-validees/{id}", method= RequestMethod.GET)
+	public List<Annonce> getSesAnnoncesValidees(@PathVariable("id") Long id){
+		User user =userDao.findOne(id);
+		List<Annonce> mesAValidees = (List<Annonce>) user.getMesAnnonceValideesAdmin();
+		
 		return mesAValidees;
 		
 	}
@@ -219,6 +353,41 @@ public class UserController {
 	public List<Annonce> getMesAnnoncesInvalidees(@RequestBody String username){
 		User user =userDao.findByUsername(username);
 		List<Annonce> mesAInvalidees = (List<Annonce>) user.getAnnoncesInvalidees();
+		return mesAInvalidees;
+		
+	}
+	@RequestMapping(value="/ses-annonces-invalidees/{id}", method= RequestMethod.GET)
+	public List<Annonce> getSesAnnoncesInvalidees(@PathVariable("id") Long id){
+		User user =userDao.findOne(id);
+		List<Annonce> mesAInvalidees = (List<Annonce>) user.getAnnoncesInvalidees();
+		return mesAInvalidees;
+		
+	}
+	@RequestMapping(value="/mes-annonces-signalees", method= RequestMethod.POST)
+	public List<Annonce> getMesAnnoncesSignalee(@RequestBody String username){
+		User user =userDao.findByUsername(username);
+		List<Annonce> mesAInvalidees = (List<Annonce>) user.getAnnoncesSignalees();
+		return mesAInvalidees;
+		
+	}
+	@RequestMapping(value="/ses-annonces-signalees/{id}", method= RequestMethod.GET)
+	public List<Annonce> getSesAnnoncesSignalee(@PathVariable("id") Long id){
+		User user =userDao.findOne(id);
+		List<Annonce> mesAnnoncesSignalees = (List<Annonce>) user.getAnnoncesSignalees();
+		return mesAnnoncesSignalees;
+		
+	}
+	@RequestMapping(value="/mes-annonces-depubliees", method= RequestMethod.POST)
+	public List<Annonce> getMesAnnoncesDepubliees(@RequestBody String username){
+		User user =userDao.findByUsername(username);
+		List<Annonce> mesAInvalidees = (List<Annonce>) user.getAnnoncesDepubliees();
+		return mesAInvalidees;
+		
+	}
+	@RequestMapping(value="/ses-annonces-depubliees/{id}", method= RequestMethod.GET)
+	public List<Annonce> getSesAnnoncesDepubliees(@PathVariable("id") Long id){
+		User user =userDao.findOne(id);
+		List<Annonce> mesAInvalidees = (List<Annonce>) user.getAnnoncesDepubliees();
 		return mesAInvalidees;
 		
 	}
@@ -240,6 +409,7 @@ public class UserController {
 		return alerteService.getAlertes(user);
 		
 	}
+	
 	@RequestMapping(value="/mes-favoris", method= RequestMethod.POST)
 	public List<Favori> mesFavoris(@RequestBody String username){
 		User user =userDao.findByUsername(username);
@@ -251,6 +421,17 @@ public class UserController {
 	public List<Annonce> getAnnoncesAvalider(){
 		
 		return annonceService.getAnnoncesAvalider();
+	}
+	@RequestMapping(value="/get-users", method= RequestMethod.POST)
+	public List<User> getUsers(){
+		
+		return userDao.findAll();
+	}
+	
+	@RequestMapping(value="/get-user/{id}", method= RequestMethod.POST)
+	public User getUser(@PathVariable("id") Long id){
+		
+		return userDao.findOne(id);
 	}
 	
 //	LES METHODES DE MODIFICATION =============================================================================================================
@@ -380,17 +561,17 @@ public class UserController {
 	
 //	LES METHODES DE SUPPRESSION =============================================================================================================
 	
-	@RequestMapping(value="/delete-annonce/{idAnnonce}", method= RequestMethod.DELETE)
-	public Annonce deleteAnnonce(@PathVariable("idAnnonce") Long idAnnonce){
-		User user =userDao.findOne(ID); // qui sera recuperer par la suite par Principal de spring security
-		return annonceService.deleteAnnonce(idAnnonce, user);
+	@RequestMapping(value="/supprimer-annonce/{idAnnonce}", method= RequestMethod.POST)
+	public Annonce deleteAnnonce(@PathVariable("idAnnonce") Long idAnnonce, @RequestBody String username){
+		System.out.println("id de l'annonce à supprimer: "+idAnnonce);
+		return annonceService.deleteAnnonce(idAnnonce, username);
 	}
-	@RequestMapping(value="/delete-alerte/{idAlerte}", method= RequestMethod.DELETE)
-	public Alerte deleteAlerte(@PathVariable("idAlerte")Long idAlerte){
-		User user =userDao.findOne(ID); // qui sera recuperer par la suite par Principal de spring security
-		return alerteService.deleteAlerte(idAlerte, user);
-		
-	}
+//	@RequestMapping(value="/delete-alerte/{idAlerte}", method= RequestMethod.DELETE)
+//	public Alerte deleteAlerte(@PathVariable("idAlerte")Long idAlerte){
+//		User user =userDao.findOne(ID); // qui sera recuperer par la suite par Principal de spring security
+//		return alerteService.deleteAlerte(idAlerte, user);
+//		
+//	}
 	@RequestMapping(value="/delete-favori/{id}", method= RequestMethod.POST)
 	public Favori deleteFavori(@PathVariable("id")Long id){
 		User user =userDao.findOne(ID); // qui sera recuperer par la suite par Principal de spring security

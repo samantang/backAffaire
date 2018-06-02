@@ -34,10 +34,10 @@ public interface AnnonceService {
 
 	/**
 	 * @param id
-	 * @param user
+	 * @param username
 	 * @return
 	 */
-	Annonce valideAnnoce(Long id, User user);
+	Annonce valideAnnoce(Long id, String username);
 
 	/**
 	 * @return
@@ -85,10 +85,10 @@ public interface AnnonceService {
 
 	/**
 	 * @param idAlerte
-	 * @param user
+	 * @param username
 	 * @return
 	 */
-	Annonce deleteAnnonce(Long idAnnonce, User user);
+	Annonce deleteAnnonce(Long idAnnonce, String username);
 
 	/**
 	 * @return
@@ -157,6 +157,23 @@ public interface AnnonceService {
 	 * @return
 	 */
 	List<Annonce> rechercheAnnonces(RechercheModele rechercheModele);
+
+	/**
+	 * @param id
+	 */
+	void addAnnonceDansListAnnoncesActivesUser(Long id);
+
+	/**
+	 * @param id
+	 * @param username
+	 */
+	void addAnnonceDansListAnnoncesValideesUser(Long id, String username);
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	Annonce addNbVuesAnnonce(Long id);
 
 	
 	

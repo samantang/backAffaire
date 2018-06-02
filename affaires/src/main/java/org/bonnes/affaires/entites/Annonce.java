@@ -79,11 +79,13 @@ public class Annonce implements Serializable{
 	private Favori favori;
 	
 	@ElementCollection
+	@JsonIgnore
 	private Collection<String> nomsPhotos;
 	
 	private String nomPhoto;
 	
 	@ElementCollection
+	@JsonIgnore
 	private Collection<String> cheminsImages;
 	
 	private boolean visible; // modifié par l'annonceur, il doit etre par defaut 'true', s'il est mis à false
@@ -163,8 +165,52 @@ public class Annonce implements Serializable{
 	private boolean immobilierTerrain;
 	private boolean immobilierParking;
 	
+	private int nbVues;
+	
+//	@ManyToOne 
+//	@JoinColumn(name="user_mesAnnonceValideesAdmin")
+//	@JsonIgnore
+	private User user_mesAnnonceValideesAdmin;
+	private User user_mesAnnonceInValideesAdmin;
 	
 	
+	
+	public User getUser_mesAnnonceInValideesAdmin() {
+		return user_mesAnnonceInValideesAdmin;
+	}
+
+
+
+	public void setUser_mesAnnonceInValideesAdmin(User user_mesAnnonceInValideesAdmin) {
+		this.user_mesAnnonceInValideesAdmin = user_mesAnnonceInValideesAdmin;
+	}
+
+
+
+	public User getUser_mesAnnonceValideesAdmin() {
+		return user_mesAnnonceValideesAdmin;
+	}
+
+
+
+	public void setUser_mesAnnonceValideesAdmin(User user_mesAnnonceValideesAdmin) {
+		this.user_mesAnnonceValideesAdmin = user_mesAnnonceValideesAdmin;
+	}
+
+
+
+	public int getNbVues() {
+		return nbVues;
+	}
+
+
+
+	public void setNbVues(int nbVues) {
+		this.nbVues = nbVues;
+	}
+
+
+
 	public int getKilometres() {
 		return kilometres;
 	}

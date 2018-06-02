@@ -21,12 +21,15 @@ import org.bonnes.affaires.entites.Message;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author salioubah
  *
  */
 @Entity
 @DiscriminatorValue("particulier")
+@JsonIgnoreProperties
 public class Particulier extends User implements Serializable {
 
 	/**
