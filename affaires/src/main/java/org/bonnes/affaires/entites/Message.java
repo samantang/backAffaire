@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -37,68 +38,70 @@ public class Message implements Serializable {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
 	private Long id;
-	private String titre;
+//	private String titre;
 	private String message;
-	private Annonce annonce;
+//	private Annonce annonce;
 	
-	@Temporal(TemporalType.DATE)
-	private Date date;
+//	@Temporal(TemporalType.DATE)
+//	private Date date;
+	@OneToOne
+	private User auteurMessage;
 	
-	@ManyToOne
-	@JoinColumn(name="messages_envoyes")
-	private User messages_envoyes;
-	
-	@ManyToOne
-	@JoinColumn(name="messages_recus")
-	private User messages_recus;
+//	@ManyToOne
+//	@JoinColumn(name="messages_envoyes")
+//	private User messages_envoyes;
+//	
+//	@ManyToOne
+//	@JoinColumn(name="messages_recus")
+//	private User messages_recus;
 	private String dateString;
-	
-	@ManyToOne
-	@JoinColumn(name="messages")
-	private Conversation messages;
-	
-	@ElementCollection
-	@JsonIgnore
-	private Collection<String> messagesEnvoyes;
-	@ElementCollection
-	@JsonIgnore
-	private Collection<String> messagesRecus;
+//	
+//	@ManyToOne
+//	@JoinColumn(name="messages")
+//	private Conversation messages;
+//	
+//	@ElementCollection
+//	@JsonIgnore
+//	private Collection<String> messagesEnvoyes;
+//	@ElementCollection
+//	@JsonIgnore
+//	private Collection<String> messagesRecus;
 
 
 
-	public void setMessages(Conversation messages) {
-		this.messages = messages;
-	}
-
-
-
-
-	public Collection<String> getMessagesEnvoyes() {
-		return messagesEnvoyes;
-	}
-
-
-
-
-	public void setMessagesEnvoyes(Collection<String> messagesEnvoyes) {
-		this.messagesEnvoyes = messagesEnvoyes;
-	}
-
-
-
-
-	public Collection<String> getMessagesRecus() {
-		return messagesRecus;
-	}
-
-
-
-
-	public void setMessagesRecus(Collection<String> messagesRecus) {
-		this.messagesRecus = messagesRecus;
-	}
-
-
+//	public void setMessages(Conversation messages) {
+//		this.messages = messages;
+//	}
+//
+//
+//
+//
+//	public Collection<String> getMessagesEnvoyes() {
+//		return messagesEnvoyes;
+//	}
+//
+//
+//
+//
+//	public void setMessagesEnvoyes(Collection<String> messagesEnvoyes) {
+//		this.messagesEnvoyes = messagesEnvoyes;
+//	}
+//
+//
+//
+//
+//	public Collection<String> getMessagesRecus() {
+//		return messagesRecus;
+//	}
+//
+//
+//
+//
+//	public void setMessagesRecus(Collection<String> messagesRecus) {
+//		this.messagesRecus = messagesRecus;
+//	}
+//
+//
 	public String getDateString() {
 		return dateString;
 	}
@@ -135,16 +138,16 @@ public class Message implements Serializable {
 
 
 
-	public String getTitre() {
-		return titre;
-	}
-
-
-
-
-	public void setTitre(String titre) {
-		this.titre = titre;
-	}
+//	public String getTitre() {
+//		return titre;
+//	}
+//
+//
+//
+//
+//	public void setTitre(String titre) {
+//		this.titre = titre;
+//	}
 
 
 
@@ -163,57 +166,72 @@ public class Message implements Serializable {
 
 
 
-	public Annonce getAnnonce() {
-		return annonce;
+	public User getAuteurMessage() {
+		return auteurMessage;
 	}
 
 
 
 
-	public void setAnnonce(Annonce annonce) {
-		this.annonce = annonce;
+	public void setAuteurMessage(User auteurMessage) {
+		this.auteurMessage = auteurMessage;
 	}
 
 
 
 
-	public Date getDate() {
-		return date;
-	}
-
-
-
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-
-
-
-	public User getMessages_envoyes() {
-		return messages_envoyes;
-	}
-
-
-
-
-	public void setMessages_envoyes(User messages_envoyes) {
-		this.messages_envoyes = messages_envoyes;
-	}
-
-
-
-
-	public User getMessages_recus() {
-		return messages_recus;
-	}
-
-
-
-
-	public void setMessages_recus(User messages_recus) {
-		this.messages_recus = messages_recus;
-	}
+//	public Annonce getAnnonce() {
+//		return annonce;
+//	}
+//
+//
+//
+//
+//	public void setAnnonce(Annonce annonce) {
+//		this.annonce = annonce;
+//	}
+//
+//
+//
+//
+//	public Date getDate() {
+//		return date;
+//	}
+//
+//
+//
+//
+//	public void setDate(Date date) {
+//		this.date = date;
+//	}
+//
+//
+//
+//
+//	public User getMessages_envoyes() {
+//		return messages_envoyes;
+//	}
+//
+//
+//
+//
+//	public void setMessages_envoyes(User messages_envoyes) {
+//		this.messages_envoyes = messages_envoyes;
+//	}
+//
+//
+//
+//
+//	public User getMessages_recus() {
+//		return messages_recus;
+//	}
+//
+//
+//
+//
+//	public void setMessages_recus(User messages_recus) {
+//		this.messages_recus = messages_recus;
+//	}
+	
 		
 }

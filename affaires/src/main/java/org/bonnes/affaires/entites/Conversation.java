@@ -3,8 +3,10 @@
  */
 package org.bonnes.affaires.entites;
 
+import java.io.Serializable;
 import java.util.Collection;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,45 +25,52 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  */
 @Entity
-public class Conversation {
+public class Conversation implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
 	private Long id;
 	private String dateString;
 	
-	@ManyToOne
-	@JoinColumn(name="mes_conversations_vendeur")
-	private User mes_conversations_vendeur;
-	
-	@ManyToOne
-	@JoinColumn(name="mes_conversations_acheteur")
-	private User mes_conversations_acheteur;
+//	@ManyToOne
+//	@JoinColumn(name="mes_conversations_vendeur")
+//	private User mes_conversations_vendeur;
+//	
+//	@ManyToOne
+//	@JoinColumn(name="mes_conversations_acheteur")
+//	private User mes_conversations_acheteur;
 	
 	@OneToOne
 	private Annonce annonce;
 	
-	@OneToMany(mappedBy="messages")
-	@JsonIgnore
+//	@OneToMany(mappedBy="messages")
+	@ElementCollection
 	private Collection<Message>  messages;
 	
 	
-	
-	
-	
-	
-	public User getMes_conversations_vendeur() {
-		return mes_conversations_vendeur;
-	}
-	public void setMes_conversations_vendeur(User mes_conversations_vendeur) {
-		this.mes_conversations_vendeur = mes_conversations_vendeur;
-	}
-	public User getMes_conversations_acheteur() {
-		return mes_conversations_acheteur;
-	}
-	public void setMes_conversations_acheteur(User mes_conversations_acheteur) {
-		this.mes_conversations_acheteur = mes_conversations_acheteur;
-	}
+		
+public Conversation(String dateString, Annonce annonce, Collection<Message> messages) {
+	super();
+	this.dateString = dateString;
+	this.annonce = annonce;
+	this.messages = messages;
+}
+//	public User getMes_conversations_vendeur() {
+//		return mes_conversations_vendeur;
+//	}
+//	public void setMes_conversations_vendeur(User mes_conversations_vendeur) {
+//		this.mes_conversations_vendeur = mes_conversations_vendeur;
+//	}
+//	public User getMes_conversations_acheteur() {
+//		return mes_conversations_acheteur;
+//	}
+//	public void setMes_conversations_acheteur(User mes_conversations_acheteur) {
+//		this.mes_conversations_acheteur = mes_conversations_acheteur;
+//	}
 	public Collection<Message> getMessages() {
 		return messages;
 	}

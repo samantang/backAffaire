@@ -6,6 +6,7 @@ package org.bonnes.affaires.servicesImpl;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -499,23 +500,40 @@ public class AnnonceServiceImpl implements AnnonceService{
 	public void sendMessage(String usernameLogged, Long idAnnonce, String mess) {
 		User userLogged = userDao.findByUsername(usernameLogged);
 		Annonce annonce = annonceRepository.findOne(idAnnonce);
-		User userAnnonce = annonce.getUser_annoncesPosteesEtValidees();
+		User userAnnonce = new User();
+		userAnnonce = annonce.getUser_annoncesPostees();
 		
-//		creation d'une conversation et de d'un message pour chacunes des deux personnes
+		DateFormat df = new SimpleDateFormat("dd/MM/YYYY hh:mm", Locale.FRANCE);
+		Date now = new Date();
+		String dateString = df.format(now);
 		
-//		Conversation conversation = new Conversation();
-//		conversation.setAnnonce(annonce);
-//		Conversation conversationSaved = conversationRepository.save(conversation);
+		Message message = new Message();
+		message.setAuteurMessage(userLogged);
+		message.setMessage(mess);
+		message.setDateString(dateString);
+		Message messageSaved = messageRepository.saveAndFlush(message);
+		
+		Collection<Message> messages = new ArrayList<Message>();
+		messages.add(messageSaved);
+		
+		Conversation conversation = new Conversation();
+		conversation.setDateString(dateString);
+		conversation.setMessages(messages);
+		conversation.setAnnonce(annonce);
+		Conversation conversationSaved = conversationRepository.saveAndFlush(conversation);
+		userLogged.getMesConversations().add(conversationSaved);
+		userDao.save(userLogged);
+		
+//		if(userAnnonce.getMesConversations() != null){
 //		
-//		
-//		Message messagerieRecu = new Message();
-//		messagerieRecu.getMessagesRecus().add(mess);
-//		
-//		Message messagerieEnvoye= new Message();
-//		messagerieEnvoye.getMessagesEnvoyes().add(mess);
+		userAnnonce.getMesConversations().add(conversationSaved);
+//		}else {
+//			Collection<Conversation> conver = new ArrayList<Conversation>();
+//			conver.add(conversationSaved);
+//			userAnnonce.setMesConversations(conver);
+//		}
 		
-		
-//		conversation.set
+		userDao.save(userAnnonce);
 		
 	}
 

@@ -109,13 +109,13 @@ public class User implements UserDetails
 	@JsonIgnore
 	private Collection<Favori> demandeFavorites;
 	
-	@OneToMany(mappedBy="messages_envoyes")
-	@JsonIgnore
-	private Collection <Message> messagesEnvoyes;
-//													vu que les messages concernent des annonces, il va faloir les changer
-	@OneToMany(mappedBy="messages_recus")
-	@JsonIgnore
-	private Collection <Message> messages_recus;
+//	@OneToMany(mappedBy="messages_envoyes")
+//	@JsonIgnore
+//	private Collection <Message> messagesEnvoyes;
+////													vu que les messages concernent des annonces, il va faloir les changer
+//	@OneToMany(mappedBy="messages_recus")
+//	@JsonIgnore
+//	private Collection <Message> messages_recus;
 	
 	@ElementCollection
 	@JsonIgnore
@@ -160,11 +160,22 @@ public class User implements UserDetails
 	@ElementCollection
     @JsonIgnore
 	private Collection<Annonce> mesAnnonceInValideesAdmin;
+	@ElementCollection
+    @JsonIgnore
+	private Collection<Conversation> mesConversations;
 		
     
     
 	
-    public Collection<Annonce> getMesAnnonceInValideesAdmin() {
+    public Collection<Conversation> getMesConversations() {
+		return mesConversations;
+	}
+
+	public void setMesConversations(Collection<Conversation> mesConversations) {
+		this.mesConversations = mesConversations;
+	}
+
+	public Collection<Annonce> getMesAnnonceInValideesAdmin() {
 		return mesAnnonceInValideesAdmin;
 	}
 
@@ -297,21 +308,21 @@ public class User implements UserDetails
 		this.demandeFavorites = demandeFavorites;
 	}
 
-	public Collection<Message> getMessagesEnvoyes() {
-		return messagesEnvoyes;
-	}
-
-	public void setMessagesEnvoyes(Collection<Message> messagesEnvoyes) {
-		this.messagesEnvoyes = messagesEnvoyes;
-	}
-
-	public Collection<Message> getMessages_recus() {
-		return messages_recus;
-	}
-
-	public void setMessages_recus(Collection<Message> messages_recus) {
-		this.messages_recus = messages_recus;
-	}
+//	public Collection<Message> getMessagesEnvoyes() {
+//		return messagesEnvoyes;
+//	}
+//
+//	public void setMessagesEnvoyes(Collection<Message> messagesEnvoyes) {
+//		this.messagesEnvoyes = messagesEnvoyes;
+//	}
+//
+//	public Collection<Message> getMessages_recus() {
+//		return messages_recus;
+//	}
+//
+//	public void setMessages_recus(Collection<Message> messages_recus) {
+//		this.messages_recus = messages_recus;
+//	}
 
 	public boolean isEnabled() {
 		return enabled;

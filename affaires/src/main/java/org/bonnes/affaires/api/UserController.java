@@ -6,6 +6,7 @@ package org.bonnes.affaires.api;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.bonnes.affaires.dao.RoleDao;
 import org.bonnes.affaires.dao.UserDao;
 import org.bonnes.affaires.entites.Alerte;
 import org.bonnes.affaires.entites.Annonce;
+import org.bonnes.affaires.entites.Conversation;
 import org.bonnes.affaires.entites.Favori;
 import org.bonnes.affaires.entites.Message;
 import org.bonnes.affaires.entites.UserMessage;
@@ -588,8 +590,13 @@ public class UserController {
 		
 		annonceService.sendMessage(userMessage.getUsername(), id, userMessage.getMessage());
 		
-		System.out.println("le message est: "+ userMessage.getMessage()+" id: "+id+" le username: "+ userMessage.getUsername());
 		return annonceDao.findOne(id);
+	}
+	
+	@RequestMapping(value="/mes-conversations/{username}", method= RequestMethod.GET)
+	public List<Conversation> getMesConversation(@PathVariable ("username") String username){
+		User user = userDao.findByUsername(username);
+		return (List<Conversation>) user.getMesConversations();
 	}
 	
 	@RequestMapping(value="/invalider-annonce/{id}", method= RequestMethod.POST)
